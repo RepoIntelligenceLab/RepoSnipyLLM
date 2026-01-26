@@ -1,0 +1,10 @@
+ollama:
+  model: "qwen3-embedding:4b"
+  # model: "qwen3:14b"
+  # model: "deepseek-r1:14b"
+#  model: "deepseek-r1:1.5b"
+  temperature: 0
+
+openai:
+  model: "gpt-4o"
+  temperature: 0

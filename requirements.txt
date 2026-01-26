@@ -1,3 +1,9 @@
 numpy
-torch
+# torch
 transformers
+langchain
+langgraph
+langchain-ollama
+langchain_text_splitters
+langchain-community
+pypdf
