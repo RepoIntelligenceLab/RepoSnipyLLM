@@ -1,0 +1,25 @@
+You are given documentation and structural summaries extracted from multiple software repositories.
+ 
+Your task is to compare these repositories based ONLY on the provided information.
+ 
+For each repository:
+- Briefly summarise its purpose and software type.
+ 
+Then:
+- Identify the main similarities between the repositories.
+- Identify the main differences between the repositories.
+ 
+Focus on:
+- repository structure 
+- software type,
+- execution model,
+- dependencies and usage patterns,
+if this information is available.
+ 
+If certain aspects cannot be compared due to missing information, explicitly state this.
+ 
+Do NOT make assumptions.
+Do NOT introduce information not supported by the retrieved documents.
+ 
+Retrieved information:
+{{RETRIEVED_DOCUMENTS_BY_REPOSITORY}}
