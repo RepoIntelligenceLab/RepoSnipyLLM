@@ -180,7 +180,10 @@ cython_debug/
 .DS_Store
 
 # Project file
-data/
+# data/
+*.pkl
+repos/
+output/
 models/
 tb_logs/
 checkpoints/

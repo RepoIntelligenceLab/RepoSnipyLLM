@@ -1,11 +1,4 @@
 numpy
 # torch
 transformers
-langchain
-langgraph
-langchain-ollama
-langchain_text_splitters
-langchain-community
-pypdf
 inspect4py
-notebook
