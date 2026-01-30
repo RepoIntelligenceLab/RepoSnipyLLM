@@ -1,6 +1,8 @@
 import pickle
 import subprocess
 from pathlib import Path
+import shutil
+from tqdm import tqdm
 
 # Path to the pickle file that stores repository information (dict)
 PKL_PATH = "../data/AWESOME-PYTHON-REPOS.pkl"
@@ -11,9 +13,13 @@ WORKDIR = Path("../data/repos")
 # Directory to store inspect4py outputs
 OUTDIR = Path("../data/output")
 
+# Directory to store extracted requirements files
+REQ_DIR = Path("../data/requirements")
+
 # Create required directories if they do not exist
 WORKDIR.mkdir(parents=True, exist_ok=True)
 OUTDIR.mkdir(parents=True, exist_ok=True)
+REQ_DIR.mkdir(parents=True, exist_ok=True)
 
 # Load repository dictionary from pickle file
 with open(PKL_PATH, "rb") as f:
@@ -31,9 +37,10 @@ def run(cmd):
     subprocess.run(cmd, check=False)
 
 
-for repo in repo_list:
-    # Repo name format: "owner/repository"
+for repo in tqdm(repo_list, desc="Extracting repositories", unit="repo"):
+    tqdm.write(f"Processing {repo}")
 
+    # Repo name format: "owner/repository"
     repo_dir = WORKDIR / repo
     repo_url = f"https://github.com/{repo}.git"
 
@@ -68,3 +75,10 @@ for repo in repo_list:
         str(repo_dir), "-o",
         str(repo_out), "-r", "-html", "-cl", "-cf", "-dt", "-si", "-ast", "-sc", "-ld", "-rm", "-md"
     ])
+
+# After inspect4py finishes
+cwd = Path.cwd()
+for req_file in cwd.glob("requirements_*.txt"):
+    target = REQ_DIR / req_file.name
+    shutil.move(str(req_file), str(target))
+    print(f"Moved {req_file} -> {target}")

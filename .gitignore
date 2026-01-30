@@ -181,9 +181,10 @@ cython_debug/
 
 # Project file
 # data/
+# models/
+# tb_logs/
+# checkpoints/
 *.pkl
 repos/
 output/
-models/
-tb_logs/
-checkpoints/
+requirements/
