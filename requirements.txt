@@ -3,3 +3,6 @@ numpy
 transformers
 inspect4py
 tqdm
+langchain
+langchain-community 
+langchain-ollama
