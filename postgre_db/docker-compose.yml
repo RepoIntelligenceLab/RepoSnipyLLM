@@ -1,0 +1,39 @@
+services:
+  postgres:
+    # PostgreSQL image with pgvector pre-installed
+    image: pgvector/pgvector:pg16
+
+    # A global container name for a single PostgreSQL instance on this machine
+    container_name: pg_global
+
+    # Restart policy
+    restart: unless-stopped
+
+    environment:
+      # Global admin database/user (NOT tied to any specific project)
+      POSTGRES_DB: postgres
+      POSTGRES_USER: pgadmin
+      POSTGRES_PASSWORD: change_me_strong_pw
+      TZ: Europe/London
+
+    # Expose PostgreSQL to the host
+    ports:
+      - "5432:5432"
+
+    volumes:
+      # Persistent storage for the global PostgreSQL instance
+      - pg_global_data:/var/lib/postgresql/data
+
+      # Initialization scripts (executed only on FIRST database initialization)
+      - ./init:/docker-entrypoint-initdb.d
+
+    # Health check to ensure PostgreSQL is ready
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pgadmin -d postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  # Named volume for persistent PostgreSQL data
+  pg_global_data:
