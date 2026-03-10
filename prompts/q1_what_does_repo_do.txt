@@ -1,16 +1,16 @@
 You are given documentation and structural information extracted from a software repository.
- 
+
 Using ONLY the information provided below, answer the following:
- 
+
 1. What is the main purpose or goal of this repository?
 2. What type of software is it (e.g. library, application, script-based project), based on the available evidence?
 3. How is the software installed, if installation instructions are provided?
 4. How is the software intended to be used or executed?
- 
+
 If any of these points cannot be determined from the provided information, explicitly state that the information is not available.
- 
+
 Do NOT make assumptions.
 Do NOT introduce information that is not supported by the retrieved documents.
- 
+
 Retrieved information:
 {{RETRIEVED_DOCUMENTS}}
