@@ -31,18 +31,23 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 
+from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
+
+load_dotenv()
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
 DATA_ROOT = Path(__file__).parent.parent / "data" / "output"
 INDEX_NAME = "repositories_raw"
-ES_URL = "http://localhost:9200"
-API_KEY = "bm1SNEtKd0JRRU9zZjhvNHlNV1c6dWFwV1RSV0U4cER6emNyZlRFVXJMZw=="
+ES_URL = os.getenv("ES_URL", "http://localhost:9200")
+API_KEY = os.getenv("ES_API_KEY")
 
 PREFIX_TO_STRIP = "../data/output/"
+REPOS_PATH_MARKER = "data/repos/"
 
 # ── ES client ─────────────────────────────────────────────────────────────────
 
@@ -73,28 +78,85 @@ def ensure_index(es: Elasticsearch):
 # ── Document builder ──────────────────────────────────────────────────────────
 
 
-def strip_prefix(key: str) -> str:
-    """
-    Strip '../data/output/' prefix from path keys.
-
-    Example:
-      '../data/output/0rpc/zerorpc-python/zerorpc-python'
-      → '0rpc/zerorpc-python/zerorpc-python'
-    """
+def strip_key_prefix(key: str) -> str:
+    """Strip '../data/output/' prefix from top-level path keys."""
     if key.startswith(PREFIX_TO_STRIP):
         return key[len(PREFIX_TO_STRIP):]
     return key
 
 
+def detect_repos_prefix(raw: dict) -> str:
+    """
+    Auto-detect the local repos path prefix from file.path fields.
+    Looks for the first string containing 'data/repos/' and extracts
+    everything up to and including that marker.
+
+    Example:
+      '/home/user/MyProject/data/repos/org/repo/file.py'
+      -> '/home/user/MyProject/data/repos/'
+    """
+    for value in raw.values():
+        if isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    path = item.get("file", {}).get("path", "")
+                    if REPOS_PATH_MARKER in path:
+                        idx = path.index(REPOS_PATH_MARKER) + len(REPOS_PATH_MARKER)
+                        return path[:idx]
+    return ""
+
+
+def strip_repos_prefix(s: str, repos_prefix: str) -> str:
+    """Strip the local repos path prefix from file path strings.
+    Handles both 'path/to/file' and 'python path/to/file' formats.
+    """
+    if repos_prefix and repos_prefix in s:
+        return s.replace(repos_prefix, "")
+    return s
+
+
+def clean_readme_files(readme: dict) -> dict:
+    """Strip ../data/output/<org>/<repo>/ prefix from readme_files keys."""
+    result = {}
+    for k, v in readme.items():
+        clean_key = strip_key_prefix(k)
+        # strip org/repo/ portion too, leaving just the filename/subpath
+        parts = clean_key.split("/", 2)
+        clean_key = parts[2] if len(parts) == 3 else clean_key
+        result[clean_key] = v
+    return result
+
+
+def clean_value(value, repos_prefix: str):
+    """
+    Recursively clean file path strings inside values.
+    Handles: list of dicts (code file entries), plain strings, dicts.
+    """
+    if isinstance(value, list):
+        return [clean_value(item, repos_prefix) for item in value]
+    elif isinstance(value, dict):
+        return {k: clean_value(v, repos_prefix) for k, v in value.items()}
+    elif isinstance(value, str):
+        return strip_repos_prefix(value, repos_prefix)
+    return value
+
+
 def build_document(raw: dict, repo_id: str) -> dict:
     """
     Build an ES document from raw directory_info.json content.
-    - Strip path prefixes from all keys
+    - Strip ../data/output/ prefix from top-level path keys
+    - Auto-detect and strip local repos path from file.path and tests[].run strings
+    - Strip prefix from readme_files internal keys
     - Add repo_id
     """
+    repos_prefix = detect_repos_prefix(raw)
     doc = {"repo_id": repo_id}
     for key, value in raw.items():
-        doc[strip_prefix(key)] = value
+        clean_key = strip_key_prefix(key)
+        if clean_key == "readme_files":
+            doc[clean_key] = clean_readme_files(value)
+        else:
+            doc[clean_key] = clean_value(value, repos_prefix)
     return doc
 
 

@@ -9,10 +9,15 @@ Usage:
 
 import argparse
 import json
+import os
+
+from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
 
-ES_URL = "http://localhost:9200"
-API_KEY = "bm1SNEtKd0JRRU9zZjhvNHlNV1c6dWFwV1RSV0U4cER6emNyZlRFVXJMZw=="
+load_dotenv()
+
+ES_URL = os.getenv("ES_URL", "http://localhost:9200")
+API_KEY = os.getenv("ES_API_KEY")
 
 
 def export_repo(repo_id: str):
