@@ -10,9 +10,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-# Max characters for README to avoid overwhelming small LLMs.
-# Adjust this value as needed, or set to None to disable truncation.
-README_MAX_CHARS = 1500
 
 def _format_repo_block(repo_data: dict) -> str:
     """Format a single repo's extracted fields into readable text."""
@@ -30,7 +27,6 @@ def _format_repo_block(repo_data: dict) -> str:
 
     if "requirements" in repo_data and repo_data["requirements"]:
         reqs = repo_data["requirements"]
-        # Filter out non-package keys
         packages = {k: v for k, v in reqs.items() if not k.startswith("#")}
         if packages:
             req_str = ", ".join(f"{k} {v}".strip() for k, v in packages.items())
@@ -41,23 +37,20 @@ def _format_repo_block(repo_data: dict) -> str:
         lines.append(f"Directory structure:\n{tree_str}")
 
     if "readme" in repo_data and repo_data["readme"]:
-        readme = repo_data["readme"]
-        if README_MAX_CHARS and len(readme) > README_MAX_CHARS:
-            readme = readme[:README_MAX_CHARS] + "\n... [truncated]"
-        lines.append(f"README:\n{readme}")
+        lines.append(f"README:\n{repo_data['readme']}")
 
     return "\n\n".join(lines)
 
 
 def build_prompt(template_path: str, question_config: dict, repo_data_list: list[dict]) -> str:
     """
-    Load a prompt template and fill in the retrieved data.
+    Load a prompt template and fill in the retrieved repository data.
 
     Parameters
     ----------
     template_path   : path to the .txt prompt template
     question_config : the question entry from questions.py
-    repo_data_list  : list of repo data dicts (one for Q1/Q3, many for Q2)
+    repo_data_list  : list of repo data dicts
     """
     path = Path(template_path)
     if not path.exists():

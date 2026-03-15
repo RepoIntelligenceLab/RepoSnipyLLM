@@ -1,103 +1,96 @@
 """
 Data Loader for RepoSnipy-LLM.
 
-Reads inspect4py directory_info.json files from the local filesystem.
-(Later this layer can be swapped out for Elasticsearch without changing
-anything above it.)
+Reads repository data from Elasticsearch (repositories_processed index).
+The public API (load_repo / load_repos) is unchanged so nothing above
+this layer needs to change.
 """
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
+import os
 
-# Fixed data root - change this to point at your data/output directory
-DATA_ROOT = Path("data/output")
+from dotenv import load_dotenv
+from elasticsearch import Elasticsearch
+
+load_dotenv()
+
+INDEX = "repositories_processed"
+ES_URL = os.getenv("ES_URL", "http://localhost:9200")
+API_KEY = os.getenv("ES_API_KEY")
 
 
 class RepoNotFoundError(Exception):
     pass
 
 
-def _find_repo_path(repo_name: str) -> Path:
+def _get_client() -> Elasticsearch:
+    return Elasticsearch(ES_URL, api_key=API_KEY)
+
+
+def _fetch_doc(repo_name: str) -> dict:
     """
-    Find directory_info.json for a given repo_name.
-    Expected layout: data/output/<org>/<repo>/directory_info.json
-
-    Accepts:
-      - full path:   0rpc/zerorpc-python
-      - repo only:   zerorpc-python  (fallback fuzzy match)
+    Fetch a single document from ES by repo_id.
+    Raises RepoNotFoundError if not found.
     """
-    # Try direct path first: data/output/0rpc/zerorpc-python/directory_info.json
-    direct = DATA_ROOT / repo_name / "directory_info.json"
-    if direct.exists():
-        return direct
-
-    # Fallback: match by repo name only (last segment after /)
-    name = repo_name.split("/")[-1]
-    matches = list(DATA_ROOT.rglob(f"{name}/directory_info.json"))
-    if not matches:
-        raise RepoNotFoundError(f"Repository '{repo_name}' not found under {DATA_ROOT}.\n"
-                                f"Make sure the folder name matches exactly, e.g. 0rpc/zerorpc-python")
-    if len(matches) > 1:
-        paths = "\n  ".join(str(p) for p in matches)
-        raise RepoNotFoundError(f"Multiple matches found for '{repo_name}':\n  {paths}\n"
-                                f"Please use the full path <org>/<repo> to disambiguate.")
-    return matches[0]
+    es = _get_client()
+    try:
+        result = es.get(index=INDEX, id=repo_name)
+        return result["_source"]
+    except Exception:
+        raise RepoNotFoundError(f"Repository '{repo_name}' not found in Elasticsearch index '{INDEX}'.\n"
+                                f"Make sure the repo has been indexed and use the full path <org>/<repo>.")
 
 
-def _extract_fields(raw: dict, fields: list[str]) -> dict:
+def _extract_fields(doc: dict, fields: list[str]) -> dict:
     """
-    Extract only the requested fields from a raw directory_info.json dict.
+    Extract only the requested fields from a processed ES document.
+    Field names match the retrieval keys defined in questions.py.
     """
     extracted = {}
 
     if "readme" in fields:
-        readme_dict = raw.get("readme_files", {})
-        # Concatenate all readme texts (usually just one)
-        extracted["readme"] = "\n\n".join(readme_dict.values()).strip()
+        readme_files = doc.get("readme_files") or []
+        texts = [r["content"] for r in readme_files if r.get("content")]
+        extracted["readme"] = "\n\n".join(texts).strip()
 
     if "software_type" in fields:
-        extracted["software_type"] = raw.get("software_type", "unknown")
+        extracted["software_type"] = doc.get("software_type") or "unknown"
 
     if "invocation" in fields:
-        extracted["invocation"] = raw.get("software_invocation", [])
+        extracted["invocation"] = doc.get("software_invocation") or []
 
     if "requirements" in fields:
-        extracted["requirements"] = raw.get("requirements", {})
+        extracted["requirements"] = doc.get("requirements") or {}
 
     if "directory_tree" in fields:
-        extracted["directory_tree"] = raw.get("directory_tree", {})
+        extracted["directory_tree"] = doc.get("directory_tree") or {}
 
     if "tests" in fields:
-        extracted["has_tests"] = bool(raw.get("tests"))
+        extracted["has_tests"] = bool(doc.get("tests"))
 
     if "license" in fields:
-        lic = raw.get("license", {})
-        extracted["license"] = lic.get("detected_type", [])
+        extracted["license"] = doc.get("license") or []
 
     return extracted
 
 
 def load_repo(repo_name: str, fields: list[str]) -> dict:
     """
-    Load a single repository's data.
+    Load a single repository's data from Elasticsearch.
 
     Returns a dict with:
       - repo_name
-      - the requested fields extracted from directory_info.json
+      - the requested fields
     """
-    json_path = _find_repo_path(repo_name)
-    with open(json_path) as f:
-        raw = json.load(f)
-
-    data = _extract_fields(raw, fields)
+    doc = _fetch_doc(repo_name)
+    data = _extract_fields(doc, fields)
     data["repo_name"] = repo_name
     return data
 
 
 def load_repos(repo_names: list[str], fields: list[str]) -> list[dict]:
     """
-    Load multiple repositories. Used by Q2 (comparison).
+    Load multiple repositories from Elasticsearch.
     """
     return [load_repo(name, fields) for name in repo_names]

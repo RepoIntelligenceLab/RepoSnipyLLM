@@ -4,7 +4,7 @@ export_test.py
 Export a single repo from repositories_raw index to a JSON file for inspection.
 
 Usage:
-  python export_test.py --repo 0rpc/zerorpc-python
+  python export_raw.py --repo 0rpc/zerorpc-python
 """
 
 import argparse
@@ -30,8 +30,8 @@ def export_repo(repo_id: str):
         return
 
     doc = result["_source"]
+    filename = repo_id.replace("/", "_") + "_raw.json"
 
-    filename = repo_id.replace("/", "_") + ".json"
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(doc, f, indent=2, ensure_ascii=False)
 

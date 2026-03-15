@@ -61,7 +61,8 @@ def ensure_index(es: Elasticsearch):
                     "type": "keyword"
                 },
                 "license": {
-                    "type": "keyword"
+                    "type": "object",
+                    "dynamic": False
                 },
                 "metadata": {
                     "type": "object",
@@ -121,6 +122,9 @@ def ensure_index(es: Elasticsearch):
                         },
                         "is_test": {
                             "type": "boolean"
+                        },
+                        "body_source_code": {
+                            "type": "text"
                         },
                         "file_doc_summary": {
                             "type": "text"
@@ -257,6 +261,7 @@ def extract_doc(doc_val) -> dict | None:
     Handles:
       - None / missing
       - {"short_description": "...", "long_description": "..."}
+      - {"short_description": "...", "full": "..."}   <- full is fallback for long_description
       - plain string (fallback: treat as short_description)
     """
     if not doc_val:
@@ -265,7 +270,7 @@ def extract_doc(doc_val) -> dict | None:
         return {"short_description": doc_val, "long_description": None}
     if isinstance(doc_val, dict):
         short = doc_val.get("short_description") or None
-        long_ = doc_val.get("long_description") or None
+        long_ = doc_val.get("long_description") or doc_val.get("full") or None
         if short or long_:
             return {"short_description": short, "long_description": long_}
     return None
@@ -338,6 +343,8 @@ def extract_files(raw: dict, repo_id: str) -> list[dict]:
                 },
                 "is_test":
                 entry.get("is_test", False),
+                "body_source_code":
+                entry.get("body", {}).get("source_code") if isinstance(entry.get("body"), dict) else None,
                 "dependencies": [{
                     "from_module": dep.get("from_module"),
                     "import": dep.get("import"),
@@ -371,43 +378,26 @@ def extract_readme_files(raw: dict) -> list[dict]:
     return result
 
 
-def extract_license(raw: dict) -> str | None:
+def extract_license(raw: dict) -> list | None:
     """
-    Extract license string from raw document.
-    inspect4py detected_type can be:
-      - None
-      - "MIT"
-      - {"MIT": "91.7%"}
-      - [{"MIT": "91.7%"}]              <- list of dicts
-      - {"detected_type": "MIT", ...}
-      - {"detected_type": {"BSD-3-Clause": "91.1%"}}
-      - {"detected_type": [{"MIT": "91.7%"}]}
+    Extract license from raw document.
+
+    inspect4py license structure:
+      - null
+      - {"extracted_text": "..."}                          <- no detected_type
+      - {"detected_type": [{"MIT": "91.7%"}, ...], ...}   <- list of {name: probability}
+
+    Returns the full detected_type list, e.g. [{"MIT": "91.7%"}, {"MIT-0": "8.3%"}]
     """
     license_val = raw.get("license")
-    if not license_val:
+    if not isinstance(license_val, dict):
         return None
-    if isinstance(license_val, str):
-        return license_val
 
-    # unwrap detected_type if present
-    if isinstance(license_val, dict):
-        detected = license_val.get("detected_type")
-    else:
-        detected = license_val
+    detected = license_val.get("detected_type")
+    if not detected or not isinstance(detected, list):
+        return None
 
-    if isinstance(detected, str):
-        return detected
-    if isinstance(detected, dict):
-        return ", ".join(detected.keys())
-    if isinstance(detected, list):
-        names = []
-        for item in detected:
-            if isinstance(item, dict):
-                names.extend(item.keys())
-            elif isinstance(item, str):
-                names.append(item)
-        return ", ".join(names) if names else None
-    return None
+    return detected
 
 
 def build_processed_document(raw: dict, repo_id: str) -> dict:
