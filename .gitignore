@@ -188,4 +188,5 @@ cython_debug/
 repos/
 output/
 requirements/
+repo_embeddings/
 backups/

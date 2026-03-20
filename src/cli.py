@@ -21,7 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.questions import TASKS, get_task, get_question
 from src.data_loader import load_repo, load_repos
-from src.prompt_builder import build_prompt
+from src.prompt_builder import build_prompt, build_summarise_prompt, build_compare_prompt
 from src.llm import generate, DEFAULT_MODEL
 from src.logger import save as save_log
 from src.output import print_task_questions, print_answer
@@ -78,7 +78,7 @@ def build_parser() -> argparse.ArgumentParser:
         "-m",
         metavar="MODEL",
         default=DEFAULT_MODEL,
-        help=f"LLM model to use (default: Ollama {DEFAULT_MODEL}).",
+        help=f"LLM model to use (default: {DEFAULT_MODEL}).",
     )
     parser.add_argument(
         "--logdir",
@@ -108,9 +108,26 @@ def handle_multi_repo(question_config: dict, repos: list[str], model: str) -> tu
     if len(repos) < 2:
         raise ValueError("This question requires at least two repository names.")
     repo_data_list = load_repos(repos, question_config["retrieval"])
+
+    # ── Single-call approach (current) ────────────────────────────────────────
     prompt = build_prompt(question_config["prompt"], question_config, repo_data_list)
     answer = generate(prompt, model)
     return prompt, answer
+
+    # Summarises each repo individually first, then compares the summaries.
+    # Uses anonymous aliases (Repository A, B, ...) to prevent the LLM from
+    # using prior knowledge about known repositories.
+    #
+    # template_dir = str(Path(question_config["prompt"]).parent)
+    # aliases = [chr(65 + i) for i in range(len(repo_data_list))]  # A, B, C, ...
+    # summaries = []
+    # for repo_data, alias in zip(repo_data_list, aliases):
+    #     summarise_prompt = build_summarise_prompt(template_dir, repo_data, f"Repository {alias}")
+    #     summary = generate(summarise_prompt, model)
+    #     summaries.append((repo_data["repo_name"], summary))
+    # compare_prompt = build_compare_prompt(template_dir, summaries)
+    # answer = generate(compare_prompt, model)
+    # return compare_prompt, answer
 
 
 def main(argv=None) -> int:

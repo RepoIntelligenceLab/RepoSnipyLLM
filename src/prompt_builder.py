@@ -71,3 +71,48 @@ def build_prompt(template_path: str, question_config: dict, repo_data_list: list
         return template.replace("{{RETRIEVED_DOCUMENTS_BY_REPOSITORY}}", combined)
 
     raise ValueError(f"Unknown input type: {question_config['input']}")
+
+
+def build_summarise_prompt(template_dir: str, repo_data: dict) -> str:
+    """
+    Build a prompt to summarise a single repository.
+    Used as step 1 and 2 in the map-reduce comparison flow.
+
+    Parameters
+    ----------
+    template_dir : directory containing prompt templates
+    repo_data    : single repo data dict
+    """
+    path = Path(template_dir) / "q2_summarise_repo.txt"
+    if not path.exists():
+        raise FileNotFoundError(f"Prompt template not found: {path}")
+
+    template = path.read_text()
+    repo_block = _format_repo_block(repo_data)
+
+    return (template.replace("{{REPO_NAME}}", repo_data.get("repo_name",
+                                                            "")).replace("{{RETRIEVED_DOCUMENTS}}", repo_block))
+
+
+def build_compare_prompt(template_dir: str, summaries: list[tuple[str, str]]) -> str:
+    """
+    Build a prompt to compare repositories based on their summaries.
+    Used as step 3 in the map-reduce comparison flow.
+
+    Parameters
+    ----------
+    template_dir : directory containing prompt templates
+    summaries    : list of (repo_name, summary_text) tuples
+    """
+    path = Path(template_dir) / "q2_compare_repositories.txt"
+    if not path.exists():
+        raise FileNotFoundError(f"Prompt template not found: {path}")
+
+    template = path.read_text()
+
+    blocks = []
+    for repo_name, summary in summaries:
+        blocks.append(f"### {repo_name}\n\n{summary}")
+    combined = "\n\n---\n\n".join(blocks)
+
+    return template.replace("{{REPOSITORY_SUMMARIES}}", combined)
