@@ -9,3 +9,4 @@ langchain-community
 langchain-ollama
 elasticsearch
 openai
+zai-sdk
