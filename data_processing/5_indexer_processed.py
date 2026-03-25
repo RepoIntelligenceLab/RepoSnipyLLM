@@ -49,7 +49,8 @@ def ensure_index(es: Elasticsearch):
 
     mapping = {
         "settings": {
-            "index.mapping.total_fields.limit": 10000
+            "index.mapping.total_fields.limit": 10000,
+            "index.mapping.exclude_source_vectors": False
         },
         "mappings": {
             "dynamic": False,
