@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 RepoSnipy-LLM — Question-Driven Semantic Search and Explanation
                 over Software Repositories.
@@ -22,7 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.questions import TASKS, get_task, get_question
 from src.data_loader import load_repo, load_repos
 from src.prompt_builder import build_prompt, build_summarise_prompt, build_compare_prompt
-from src.llm import generate, DEFAULT_MODEL
+from src.llm import generate, DEFAULT_MODEL, SUPPORTED_PROVIDERS
 from src.logger import save as save_log
 from src.output import print_task_questions, print_answer
 
@@ -78,7 +77,12 @@ def build_parser() -> argparse.ArgumentParser:
         "-m",
         metavar="MODEL",
         default=DEFAULT_MODEL,
-        help=f"LLM model to use (default: {DEFAULT_MODEL}).",
+        help=(
+            f"LLM model to use (default: {DEFAULT_MODEL}). "
+            "Format: 'provider:model_name' (e.g. deepseek:deepseek-chat, "
+            "zhipu:glm-4.7-flash, ollama:qwen3:8b). "
+            f"Supported providers: {', '.join(sorted(SUPPORTED_PROVIDERS))}."
+        ),
     )
     parser.add_argument(
         "--logdir",
