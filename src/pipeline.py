@@ -101,7 +101,6 @@ def _get_group_summaries(
 
     group_summaries = []
     n_groups = math.ceil(len(repo_data_list) / GROUP_SIZE)
-    print(n_groups)
 
     for i in range(n_groups):
         group = repo_data_list[i * GROUP_SIZE:(i + 1) * GROUP_SIZE]
