@@ -3,6 +3,11 @@ Question and Task registry for RepoSnipy-LLM.
 
 To add a new question: add an entry to the TASKS dict below.
 To add a new task: add a new key to TASKS with its own questions dict.
+
+handler types:
+  single  - single repo deep analysis
+  search  - multi repo retrieval/filtering (user specified)
+  similar - embedding-based similarity search (top K)
 """
 
 TASKS = {
@@ -15,8 +20,8 @@ TASKS = {
                 "What does a repository do?",
                 "description": ("Explains the main purpose, software type, "
                                 "installation and usage of a single repository."),
-                "input":
-                "single_repo",
+                "handler":
+                "single",
                 "retrieval": [
                     "readme",
                     "software_type",
@@ -25,40 +30,40 @@ TASKS = {
                     "directory_tree",
                 ],
                 "prompt":
-                "prompts/q1_what_does_repo_do.txt",
+                "prompts/repository_understanding_1_what_does_repo_do.txt",
             },
             "2": {
                 "name":
                 "What are the similarities and differences between repositories?",
                 "description": ("Compares two or more repositories based on "
                                 "structure, software type, dependencies and usage patterns."),
-                "input":
-                "multi_repo",
+                "handler":
+                "search",
                 "retrieval": [
-                    "readme",
+                    "readme_summary",
                     "software_type",
                     "invocation",
                     "requirements",
                     "directory_tree",
                 ],
                 "prompt":
-                "prompts/q2_compare_repositories.txt",
+                "prompts/repository_understanding_2_compare.txt",
             },
             "3": {
                 "name":
                 "Find repositories similar to a given one.",
                 "description": ("Retrieves and explains repositories most similar "
                                 "to a reference repository in terms of structure and functionality."),
-                "input":
-                "single_repo",
+                "handler":
+                "similar",
                 "retrieval": [
-                    "readme",
+                    "readme_summary",
                     "software_type",
+                    "invocation",
+                    "requirements",
                 ],
                 "prompt":
-                "prompts/q3_find_similar_repositories.txt",
-                "requires_embeddings":
-                True,
+                "prompts/repository_understanding_3_similar.txt",
             },
         },
     },

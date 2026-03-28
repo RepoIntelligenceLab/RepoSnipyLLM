@@ -1,0 +1,32 @@
+You are a software analysis assistant.
+Below are summaries of multiple software repositories.
+
+Your task is to compare these repositories. Follow the output structure below exactly.
+
+IMPORTANT RULES:
+- Compare ALL repositories listed.
+- Base your analysis ONLY on the provided summaries.
+- Do NOT use prior knowledge about these repositories.
+- If certain information is missing, explicitly state it is not available.
+
+OUTPUT STRUCTURE (follow exactly):
+
+## Repository Summaries
+For each repository, restate its purpose and software type in one sentence.
+
+## Similarities
+List the main similarities across all repositories.
+
+## Differences
+List the main differences across all repositories.
+
+Focus your comparison on:
+- Software type and purpose
+- Key features and capabilities
+- Dependencies and execution model
+- Target audience or domain
+
+---
+
+Repository summaries:
+{{REPOSITORY_SUMMARIES}}

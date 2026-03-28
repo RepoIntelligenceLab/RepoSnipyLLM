@@ -49,6 +49,9 @@ def _extract_fields(doc: dict, fields: list[str]) -> dict:
     """
     extracted = {}
 
+    if "readme_summary" in fields:
+        extracted["readme_summary"] = doc.get("readme_summary") or ""
+
     if "readme" in fields:
         readme_files = doc.get("readme_files") or []
         texts = [r["content"] for r in readme_files if r.get("content")]
