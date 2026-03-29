@@ -8,7 +8,7 @@ Usage:
   python fill_readme_file_summary.py
 
 Logs are printed to stdout, redirect to file if needed:
-  nohup python fill_readme_file_summary.py > logs/readme_file_summary.log 2>&1 &
+  nohup python -u fill_readme_file_summary.py > logs/readme_files_summary.log 2>&1 &
 """
 
 import os
