@@ -1,7 +1,7 @@
 """
 Data Loader for RepoSnipy-LLM.
 
-Reads repository data from Elasticsearch (repositories_processed index).
+Reads repository data from Elasticsearch (repositories_enriched index).
 The public API (load_repo / load_repos) is unchanged so nothing above
 this layer needs to change.
 """
@@ -15,7 +15,7 @@ from elasticsearch import Elasticsearch
 
 load_dotenv()
 
-INDEX = "repositories_processed"
+INDEX = "repositories_enriched"
 ES_URL = os.getenv("ES_URL", "http://localhost:9200")
 API_KEY = os.getenv("ES_API_KEY")
 

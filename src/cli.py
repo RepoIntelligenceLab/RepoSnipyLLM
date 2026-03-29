@@ -8,7 +8,7 @@ Usage:
   python -m src.cli --task repository_understanding --list-task-questions
   python -m src.cli --task repository_understanding --question 1 --repo 0rpc/zerorpc-python --model deepseek:deepseek-chat
   python -m src.cli --task repository_understanding --question 2 --repo ajenti/ajenti andialbrecht/sqlparse grantjenks/python-sortedcontainers --model deepseek:deepseek-chat
-  python -m src.cli --task repository_understanding --question 3 --repo 0rpc/zerorpc-python --topk 10
+  python -m src.cli --task repository_understanding --question 3 --repo 0rpc/zerorpc-python --topk 10 --model deepseek:deepseek-chat
 """
 
 import argparse

@@ -1,7 +1,7 @@
 """
 fill_readme_file_summary.py
 
-Fills readme_file_summary for all repos in repositories_processed index.
+Fills readme_file_summary for all repos in repositories_enriched index.
 Runs sequentially to avoid rate limiting.
 
 Usage:
@@ -27,9 +27,10 @@ ZHIPU_API_KEY = os.getenv('ZHIPU_API_KEY')
 es = Elasticsearch(ES_URL, api_key=API_KEY)
 zhipu = ZhipuAiClient(api_key=ZHIPU_API_KEY)
 
-INDEX = 'repositories_processed'
+INDEX = 'repositories_enriched'
 MODEL = 'glm-4.7-flash'
 SLEEP_BETWEEN_CALLS = 0.5
+MAX_CHARS = 300000
 
 # ── Prompt ────────────────────────────────────────────────────────────────────
 
@@ -55,12 +56,23 @@ README content:
 
 
 def build_prompt(content: str) -> str:
+    if len(content) > MAX_CHARS:
+        content = content[:MAX_CHARS] + '\n\n[Content truncated due to length]'
     return README_FILE_SUMMARY_PROMPT.format(content=content)
 
 
-def zhipu_generate(prompt: str) -> str:
-    response = zhipu.chat.completions.create(model=MODEL, messages=[{'role': 'user', 'content': prompt}])
-    return response.choices[0].message.content.strip()
+def zhipu_generate(prompt: str, max_retries: int = 3) -> str:
+    for attempt in range(max_retries):
+        try:
+            response = zhipu.chat.completions.create(model=MODEL, messages=[{'role': 'user', 'content': prompt}])
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            if attempt < max_retries - 1:
+                wait = 10 * (attempt + 1)
+                tqdm.write(f'  [RETRY] attempt {attempt + 1}, waiting {wait}s: {e}')
+                time.sleep(wait)
+            else:
+                raise
 
 
 # ── ES utils ──────────────────────────────────────────────────────────────────

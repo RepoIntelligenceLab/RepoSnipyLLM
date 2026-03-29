@@ -26,10 +26,10 @@ from src.logger import save as save_log
 
 load_dotenv()
 
-# GROUP_SIZE = 5
-GROUP_SIZE = 2
+GROUP_SIZE = 5
+# GROUP_SIZE = 2
 
-INDEX = "repositories_processed"
+INDEX = "repositories_enriched"
 ES_URL = os.getenv("ES_URL", "http://localhost:9200")
 API_KEY = os.getenv("ES_API_KEY")
 

@@ -1,7 +1,7 @@
 """
 export_processed.py
 
-Export a single repo from repositories_processed index to a JSON file.
+Export a single repo from repositories_enriched index to a JSON file.
 
 Usage:
   python export_processed.py --repo 0rpc/zerorpc-python
@@ -24,7 +24,7 @@ def export_repo(repo_id: str):
     es = Elasticsearch(ES_URL, api_key=API_KEY)
 
     try:
-        result = es.get(index="repositories_processed", id=repo_id)
+        result = es.get(index="repositories_enriched", id=repo_id)
     except Exception as e:
         print(f"[ERROR] Failed to fetch {repo_id}: {e}")
         return

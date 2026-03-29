@@ -2,12 +2,12 @@
 indexer_processed.py
 
 Reads from repositories_raw index and writes structured, cleaned documents
-into repositories_processed index.
+into repositories_enriched index.
 
 What it does:
   1. Fetches raw documents from repositories_raw
   2. Extracts and transforms fields according to the processed schema
-  3. Indexes into repositories_processed
+  3. Indexes into repositories_enriched
 
 Usage:
   # Test with a few repos first
@@ -32,7 +32,7 @@ load_dotenv()
 # ── Config ────────────────────────────────────────────────────────────────────
 
 INDEX_RAW = "repositories_raw"
-INDEX_PROCESSED = "repositories_processed"
+INDEX_PROCESSED = "repositories_enriched"
 ES_URL = os.getenv("ES_URL", "http://localhost:9200")
 API_KEY = os.getenv("ES_API_KEY")
 
@@ -401,19 +401,52 @@ def extract_license(raw: dict) -> list | None:
     return detected
 
 
+def extract_software_invocation(raw: dict) -> list | None:
+    invocations = raw.get("software_invocation")
+    if not invocations or not isinstance(invocations, list):
+        return invocations
+
+    result = []
+    for inv in invocations:
+        if not isinstance(inv, dict):
+            result.append(inv)
+            continue
+
+        run_var = inv.get("run")
+        if run_var is None:
+            result.append(inv)
+            continue
+
+        # Normalise run to list[str]
+        if isinstance(run_var, str):
+            normalised_run = [run_var]
+        elif isinstance(run_var, list):
+            normalised_run = []
+            for item in run_var:
+                if isinstance(item, list):
+                    normalised_run.append(' '.join(str(x) for x in item))
+                else:
+                    normalised_run.append(str(item))
+        else:
+            normalised_run = [str(run_var)]
+
+        result.append({**inv, 'run': normalised_run})
+
+    return result
+
+
 def build_processed_document(raw: dict, repo_id: str) -> dict:
     """Transform a raw document into the processed schema."""
-    license_val = extract_license(raw)
 
     return {
         "repo_id": repo_id,
         "software_type": raw.get("software_type"),
-        "license": license_val,
+        "license": extract_license(raw),
         "metadata": raw.get("metadata"),
         "directory_tree": raw.get("directory_tree"),
         "requirements": raw.get("requirements"),
         "tests": raw.get("tests"),
-        "software_invocation": raw.get("software_invocation"),
+        "software_invocation": extract_software_invocation(raw),
         "readme_files": extract_readme_files(raw),
         "readme_summary": None,
         "files": extract_files(raw, repo_id),

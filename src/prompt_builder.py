@@ -44,6 +44,9 @@ def _format_repo_block(repo_data: dict, retrieval: list[str]) -> str:
         tree_str = json.dumps(repo_data["directory_tree"], indent=2)
         lines.append(f"Directory structure:\n{tree_str}")
 
+    if not lines:
+        return "No structured information available for this repository."
+
     return "\n\n".join(lines)
 
 
