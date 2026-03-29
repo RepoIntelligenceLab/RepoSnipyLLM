@@ -44,8 +44,11 @@ def _format_repo_block(repo_data: dict, retrieval: list[str]) -> str:
         tree_str = json.dumps(repo_data["directory_tree"], indent=2)
         lines.append(f"Directory structure:\n{tree_str}")
 
-    if not lines:
-        return "No structured information available for this repository."
+    if "tests" in retrieval:
+        if repo_data.get("tests"):
+            lines.append(f"Tests: {json.dumps(repo_data['tests'], indent=2)}")
+        elif "has_tests" in repo_data:
+            lines.append(f"Tests: {'present' if repo_data['has_tests'] else 'not found'}")
 
     return "\n\n".join(lines)
 

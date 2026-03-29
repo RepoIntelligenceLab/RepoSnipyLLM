@@ -1,0 +1,32 @@
+You are a software analysis assistant.
+Below is structured information about multiple software repositories.
+
+Your task is to identify which repositories rely heavily on external libraries or frameworks.
+
+IMPORTANT RULES:
+- Base your analysis ONLY on the provided information.
+- Do NOT use prior knowledge about these repositories.
+- If certain information is missing, state that briefly.
+
+For each repository, assess:
+- The number and nature of external dependencies listed in requirements
+- Whether the README describes reliance on major frameworks or libraries
+- Whether the software type suggests heavy external dependency
+
+OUTPUT STRUCTURE (follow exactly):
+
+## Analysis
+
+For each repository:
+### <repo_name>
+- Heavy external dependencies: Yes / No / Unclear
+- Key dependencies: <list main external dependencies if available>
+- Evidence: <brief explanation based on provided data>
+
+## Summary
+List the repositories with heavy external dependencies and note any common frameworks or libraries used across repositories.
+
+---
+
+Repositories:
+{{REPOSITORY_SUMMARIES}}

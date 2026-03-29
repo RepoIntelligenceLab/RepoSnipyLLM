@@ -70,7 +70,9 @@ def _extract_fields(doc: dict, fields: list[str]) -> dict:
         extracted["directory_tree"] = doc.get("directory_tree") or {}
 
     if "tests" in fields:
-        extracted["has_tests"] = bool(doc.get("tests"))
+        tests = doc.get("tests")
+        extracted["tests"] = tests or None
+        extracted["has_tests"] = bool(tests)
 
     if "license" in fields:
         extracted["license"] = doc.get("license") or []

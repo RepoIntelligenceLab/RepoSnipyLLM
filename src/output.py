@@ -21,6 +21,12 @@ DIM = lambda t: _c("2", t)
 HEADER = lambda t: _c("1;34", t)
 SEP = lambda: DIM("─" * 60)
 
+HANDLER_LABELS = {
+    "single": "Single repository analysis",
+    "search": "Multi-repository search",
+    "similar": "Embedding-based similarity search",
+}
+
 
 def print_task_questions(tasks: dict) -> None:
     """Output for --list-task-questions"""
@@ -30,8 +36,8 @@ def print_task_questions(tasks: dict) -> None:
         for q_id, q in task["questions"].items():
             print(f"  {BOLD(f'[Q{q_id}]')} {q['name']}")
             print(f"        {q['description']}")
-            input_hint = q["input"].replace("_", " ")
-            print(DIM(f"        Input: {input_hint}"))
+            handler_hint = HANDLER_LABELS.get(q.get("handler"), q.get("handler", "unknown"))
+            print(DIM(f"        Mode: {handler_hint}"))
             print()
 
 

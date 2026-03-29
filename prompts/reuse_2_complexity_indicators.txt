@@ -1,0 +1,32 @@
+You are a software analysis assistant.
+Below is structured information about a single software repository.
+
+Your task is to identify signs of high structural complexity in this repository.
+
+IMPORTANT RULES:
+- Base your analysis ONLY on the provided information.
+- Do NOT use prior knowledge about this repository.
+- If certain information is missing, state that briefly.
+
+Look for complexity indicators such as:
+- Deeply nested directory structure
+- Large number of modules or subpackages
+- Many dependencies suggesting complex integration
+- README describing complex architecture or many components
+
+OUTPUT STRUCTURE (follow exactly):
+
+## Complexity Assessment
+
+### Overall complexity: High / Moderate / Low / Unclear
+
+### Indicators found
+<list specific complexity indicators found in the provided data>
+
+### Evidence
+<cite specific evidence from the provided information>
+
+---
+
+Repository:
+{{RETRIEVED_DOCUMENTS}}

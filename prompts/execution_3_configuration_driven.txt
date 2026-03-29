@@ -1,0 +1,32 @@
+You are a software analysis assistant.
+Below is structured information about multiple software repositories.
+
+Your task is to identify which repositories rely on configuration files or parameters to control execution.
+
+IMPORTANT RULES:
+- Base your analysis ONLY on the provided information.
+- Do NOT use prior knowledge about these repositories.
+- If certain information is missing, state that briefly.
+
+For each repository, assess:
+- Whether the directory structure includes configuration files (e.g. config.yaml, settings.py, .env)
+- Whether the invocation or README mentions configuration parameters
+- Whether the software type suggests configuration-driven behaviour
+
+OUTPUT STRUCTURE (follow exactly):
+
+## Analysis
+
+For each repository:
+### <repo_name>
+- Configuration-driven: Yes / No / Unclear
+- Configuration mechanism: <e.g. config file, env vars, CLI args, if available>
+- Evidence: <brief explanation based on provided data>
+
+## Summary
+List the repositories that are configuration-driven and note common configuration patterns.
+
+---
+
+Repositories:
+{{REPOSITORY_SUMMARIES}}

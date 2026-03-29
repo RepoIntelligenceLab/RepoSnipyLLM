@@ -1,0 +1,31 @@
+You are a software analysis assistant.
+Below is structured information about multiple software repositories.
+
+Your task is to classify each repository as a reusable library, a standalone application, or something in between.
+
+IMPORTANT RULES:
+- Base your analysis ONLY on the provided information.
+- Do NOT use prior knowledge about these repositories.
+- If certain information is missing, state that briefly.
+
+For each repository, assess:
+- Whether it is designed to be imported and reused by other code (library)
+- Whether it is designed to be run directly by end users (application)
+- Evidence from software type, entry points, directory structure, and README
+
+OUTPUT STRUCTURE (follow exactly):
+
+## Analysis
+
+For each repository:
+### <repo_name>
+- Type: Library / Application / Both / Unclear
+- Evidence: <brief explanation based on provided data>
+
+## Summary
+Summarise the distribution across library, application, and mixed types, noting any common patterns.
+
+---
+
+Repositories:
+{{REPOSITORY_SUMMARIES}}

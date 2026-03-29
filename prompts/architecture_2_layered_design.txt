@@ -1,0 +1,31 @@
+You are a software analysis assistant.
+Below is structured information about multiple software repositories.
+
+Your task is to identify which repositories show a layered structure, such as separation between core logic and interfaces, or between different abstraction levels.
+
+IMPORTANT RULES:
+- Base your analysis ONLY on the provided information.
+- Do NOT use prior knowledge about these repositories.
+- If certain information is missing, state that briefly.
+
+For each repository, assess:
+- Whether the directory structure suggests distinct layers (e.g. core, api, utils, interfaces)
+- Whether the README describes a layered or tiered design
+- The evidence supporting your assessment
+
+OUTPUT STRUCTURE (follow exactly):
+
+## Analysis
+
+For each repository:
+### <repo_name>
+- Layered: Yes / No / Unclear
+- Evidence: <brief explanation based on provided data>
+
+## Summary
+List the repositories that show a layered design, with a brief explanation of the patterns observed.
+
+---
+
+Repositories:
+{{REPOSITORY_SUMMARIES}}

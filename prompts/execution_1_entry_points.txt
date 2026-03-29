@@ -1,0 +1,32 @@
+You are a software analysis assistant.
+Below is structured information about multiple software repositories.
+
+Your task is to identify which repositories provide a clear entry point for execution, such as a main script, a command-line interface, or an explicit run command.
+
+IMPORTANT RULES:
+- Base your analysis ONLY on the provided information.
+- Do NOT use prior knowledge about these repositories.
+- If certain information is missing, state that briefly.
+
+For each repository, assess:
+- Whether there is a clear entry point (e.g. main.py, CLI command, setup.py console_scripts)
+- Whether the invocation information describes how to run the software
+- Whether the README mentions a specific execution command
+
+OUTPUT STRUCTURE (follow exactly):
+
+## Analysis
+
+For each repository:
+### <repo_name>
+- Clear entry point: Yes / No / Unclear
+- Entry point: <name of entry point if available>
+- Evidence: <brief explanation based on provided data>
+
+## Summary
+List the repositories with clear entry points and note any common patterns in how they expose execution.
+
+---
+
+Repositories:
+{{REPOSITORY_SUMMARIES}}

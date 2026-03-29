@@ -1,0 +1,31 @@
+You are a software analysis assistant.
+Below is structured information about multiple software repositories.
+
+Your task is to identify which repositories primarily consist of scripts rather than reusable modules or packages.
+
+IMPORTANT RULES:
+- Base your analysis ONLY on the provided information.
+- Do NOT use prior knowledge about these repositories.
+- If certain information is missing, state that briefly.
+
+For each repository, assess:
+- Whether the structure suggests standalone scripts rather than importable modules
+- Whether the entry points and invocation suggest direct script execution
+- Whether the README describes it as a script or tool rather than a library
+
+OUTPUT STRUCTURE (follow exactly):
+
+## Analysis
+
+For each repository:
+### <repo_name>
+- Script-based: Yes / No / Unclear
+- Evidence: <brief explanation based on provided data>
+
+## Summary
+List the repositories that are primarily script-based, with a brief explanation of common patterns.
+
+---
+
+Repositories:
+{{REPOSITORY_SUMMARIES}}
