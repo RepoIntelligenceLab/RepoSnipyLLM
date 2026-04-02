@@ -1,12 +1,11 @@
 """
-Project: Awesome Python Repository Analyzer
-Module: Progress Diagnostics & Sorted Report Export
-Date: 2026-04-02
-
 Description:
     Analyzes the analysis status of repositories and exports categorized lists 
     into individual text files. All outputs are SORTED alphabetically for 
     easier debugging and comparison.
+
+Usage:
+    python 2_check_and_export_progress.py
 """
 
 import pickle
