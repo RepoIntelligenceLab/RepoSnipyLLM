@@ -36,7 +36,7 @@ REQ_DIR = Path("../data/requirements")
 
 # --- EXECUTION SETTINGS ---
 # Adjust based on CPU core count. 4-8 recommended for high-load AST extraction.
-MAX_WORKERS = 4
+MAX_WORKERS = 2
 
 # Ensure environment is ready
 for d in [WORKDIR, OUTDIR, REQ_DIR]:
@@ -52,6 +52,10 @@ def process_single_repo(repo):
         repo_dir = WORKDIR / repo
         repo_out = OUTDIR / repo
         repo_url = f"https://github.com/{repo}.git"
+
+        if repo_out.exists() and any(repo_out.iterdir()):
+            # tqdm.write(f"Skipping {repo} (Already analyzed)")
+            return f"Skipped: {repo}"
 
         # 1. Clone Stage (Shallow)
         if not repo_dir.exists():
