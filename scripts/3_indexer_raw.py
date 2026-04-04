@@ -18,13 +18,13 @@ Notes:
 
 Usage:
   # Test with a few repos first
-  python indexer_raw.py --limit 3
+  python 3_indexer_raw.py --limit 3
 
   # Index specific repos only
-  python indexer_raw.py --repos django/django sympy/sympy
+  python 3_indexer_raw.py --repos django/django sympy/sympy
 
   # Full index
-  python indexer_raw.py
+  python 3_indexer_raw.py
 """
 
 from __future__ import annotations
@@ -42,7 +42,8 @@ load_dotenv()
 # ── Config ────────────────────────────────────────────────────────────────────
 
 DATA_ROOT = Path(__file__).parent.parent / "data" / "output"
-INDEX_NAME = "repositories_raw"
+# INDEX_NAME = "repositories_raw"
+INDEX_NAME = "repositories_raw_new"
 ES_URL = os.getenv("ES_URL", "http://localhost:9200")
 API_KEY = os.getenv("ES_API_KEY")
 

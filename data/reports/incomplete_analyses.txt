@@ -1,0 +1,12 @@
+astral-sh/ruff
+dagster-io/dagster
+nltk/nltk
+piskvorky/gensim
+psf/black
+pybuilder/pybuilder
+PyCQA/bandit
+pygame/pygame
+pyside/pyside-setup
+python-babel/babel
+quodlibet/mutagen
+renpy/renpy

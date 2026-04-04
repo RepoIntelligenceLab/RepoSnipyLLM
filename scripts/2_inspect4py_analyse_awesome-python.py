@@ -26,6 +26,8 @@ REQ_DIR = Path("../data/requirements")
 for d in [WORKDIR, OUTDIR, REQ_DIR]:
     d.mkdir(parents=True, exist_ok=True)
 
+SKIP_LIST = ["kivy/kivy"]
+
 
 def process_single_repo(repo):
     """
@@ -33,6 +35,9 @@ def process_single_repo(repo):
     Returns a status string for logging.
     """
     try:
+        if repo in SKIP_LIST:
+            return f"[BLACKLISTED] {repo} - Reason: Memory Monster"
+
         repo_dir = WORKDIR / repo
         repo_out = OUTDIR / repo
         repo_url = f"https://github.com/{repo}.git"

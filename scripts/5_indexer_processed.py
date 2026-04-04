@@ -11,13 +11,13 @@ What it does:
 
 Usage:
   # Test with a few repos first
-  python indexer_processed.py --limit 3
+  python 5_indexer_processed.py --limit 3
 
   # Index specific repos only
-  python indexer_processed.py --repos django/django sympy/sympy
+  python 5_indexer_processed.py --repos django/django sympy/sympy
 
   # Full index
-  python indexer_processed.py
+  python 5_indexer_processed.py
 """
 
 from __future__ import annotations
@@ -31,8 +31,8 @@ load_dotenv()
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
-INDEX_RAW = "repositories_raw"
-INDEX_PROCESSED = "repositories_enriched"
+INDEX_RAW = "repositories_raw_new"
+INDEX_PROCESSED = "repositories_enriched_new"
 ES_URL = os.getenv("ES_URL", "http://localhost:9200")
 API_KEY = os.getenv("ES_API_KEY")
 

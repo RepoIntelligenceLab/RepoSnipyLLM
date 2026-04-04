@@ -6,10 +6,10 @@ Reads all readme files' raw content directly (not from readme_file_summary).
 Runs sequentially to avoid rate limiting.
 
 Usage:
-  python fill_readme_summary.py
+  python 8_fill_readme_summary.py
 
 Logs are printed to stdout, redirect to file if needed:
-  nohup python -u fill_readme_summary.py > logs/readme_summary.log 2>&1 &
+  nohup python -u 8_fill_readme_summary.py > logs/readme_summary.log 2>&1 &
 """
 
 import os
@@ -28,7 +28,7 @@ ZHIPU_API_KEY = os.getenv('ZHIPU_API_KEY')
 es = Elasticsearch(ES_URL, api_key=API_KEY)
 zhipu = ZhipuAiClient(api_key=ZHIPU_API_KEY)
 
-INDEX = 'repositories_enriched'
+INDEX = 'repositories_enriched_new'
 MODEL = 'glm-4.7-flash'
 SLEEP_BETWEEN_CALLS = 0.5
 MAX_CHARS = 300000

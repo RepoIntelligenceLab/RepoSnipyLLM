@@ -4,7 +4,7 @@ export_processed.py
 Export a single repo from repositories_enriched index to a JSON file.
 
 Usage:
-  python export_processed.py --repo 0rpc/zerorpc-python
+  python 6_export_processed.py --repo 567-labs/instructor
 """
 
 import argparse
@@ -24,7 +24,7 @@ def export_repo(repo_id: str):
     es = Elasticsearch(ES_URL, api_key=API_KEY)
 
     try:
-        result = es.get(index="repositories_enriched", id=repo_id)
+        result = es.get(index="repositories_enriched_new", id=repo_id)
     except Exception as e:
         print(f"[ERROR] Failed to fetch {repo_id}: {e}")
         return
@@ -40,6 +40,6 @@ def export_repo(repo_id: str):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--repo", "-r", required=True, help="e.g. 0rpc/zerorpc-python")
+    parser.add_argument("--repo", "-r", required=True, help="e.g. 567-labs/instructor")
     args = parser.parse_args()
     export_repo(args.repo)
