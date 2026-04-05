@@ -29,7 +29,7 @@ load_dotenv()
 GROUP_SIZE = 5
 # GROUP_SIZE = 2
 
-INDEX = "repositories_enriched"
+INDEX = "repositories_enriched_new"
 ES_URL = os.getenv("ES_URL", "http://localhost:9200")
 API_KEY = os.getenv("ES_API_KEY")
 
@@ -60,7 +60,9 @@ def _similarity_search(repo_id: str, topk: int) -> list[str]:
                          "query": {
                              "script_score": {
                                  "query": {
-                                     "match_all": {}
+                                     "exists": {
+                                         "field": "embedding"
+                                     }
                                  },
                                  "script": {
                                      "source": "cosineSimilarity(params.query_vector, 'embedding') + 1.0",

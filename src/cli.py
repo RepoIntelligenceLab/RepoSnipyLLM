@@ -8,36 +8,36 @@ Usage:
   
     # Respository Understanding
     python -m src.cli --task repository_understanding --list-task-questions
-    python -m src.cli --task repository_understanding --question 1 --repo 0rpc/zerorpc-python --model deepseek:deepseek-chat
-    python -m src.cli --task repository_understanding --question 2 --repo ajenti/ajenti andialbrecht/sqlparse grantjenks/python-sortedcontainers --model deepseek:deepseek-chat
-    python -m src.cli --task repository_understanding --question 3 --repo 0rpc/zerorpc-python --topk 10 --model deepseek:deepseek-chat
+    python -m src.cli --task repository_understanding --question 1 --repo tomerfiliba-org/rpyc --model deepseek:deepseek-chat
+    python -m src.cli --task repository_understanding --question 2 --repo tomerfiliba-org/rpyc grpc/grpc --model deepseek:deepseek-chat
+    python -m src.cli --task repository_understanding --question 3 --repo tomerfiliba-org/rpyc --topk 10 --model deepseek:deepseek-chat
 
     # Architecture
     python -m src.cli --task architecture --list-task-questions
-    python -m src.cli --task architecture --question 1 --repo 0rpc/zerorpc-python aaugustin/websockets tomerfiliba/rpyc --model deepseek:deepseek-chat
-    python -m src.cli --task architecture --question 2 --repo 0rpc/zerorpc-python aaugustin/websockets tomerfiliba/rpyc --model deepseek:deepseek-chat
-    python -m src.cli --task architecture --question 3 --repo 0rpc/zerorpc-python aaugustin/websockets tomerfiliba/rpyc --model deepseek:deepseek-chat
-    python -m src.cli --task architecture --question 4 --repo 0rpc/zerorpc-python aaugustin/websockets tomerfiliba/rpyc --model deepseek:deepseek-chat
+    python -m src.cli --task architecture --question 1 --repo tomerfiliba-org/rpyc grpc/grpc --model deepseek:deepseek-chat
+    python -m src.cli --task architecture --question 2 --repo tomerfiliba-org/rpyc grpc/grpc --model deepseek:deepseek-chat
+    python -m src.cli --task architecture --question 3 --repo tomerfiliba-org/rpyc grpc/grpc --model deepseek:deepseek-chat
+    python -m src.cli --task architecture --question 4 --repo tomerfiliba-org/rpyc grpc/grpc --model deepseek:deepseek-chat
 
     # Execution
     python -m src.cli --task execution --list-task-questions
-    python -m src.cli --task execution --question 1 --repo 0rpc/zerorpc-python aaugustin/websockets tomerfiliba/rpyc --model deepseek:deepseek-chat
-    python -m src.cli --task execution --question 2 --repo 0rpc/zerorpc-python aaugustin/websockets tomerfiliba/rpyc --model deepseek:deepseek-chat
-    python -m src.cli --task execution --question 3 --repo 0rpc/zerorpc-python aaugustin/websockets tomerfiliba/rpyc --model deepseek:deepseek-chat
+    python -m src.cli --task execution --question 1 --repo tomerfiliba-org/rpyc grpc/grpc --model deepseek:deepseek-chat
+    python -m src.cli --task execution --question 2 --repo tomerfiliba-org/rpyc grpc/grpc --model deepseek:deepseek-chat
+    python -m src.cli --task execution --question 3 --repo tomerfiliba-org/rpyc grpc/grpc --model deepseek:deepseek-chat
 
     # Implementation
     python -m src.cli --task implementation --list-task-questions
-    python -m src.cli --task implementation --question 1 --repo 0rpc/zerorpc-python --model deepseek:deepseek-chat
-    python -m src.cli --task implementation --question 2 --repo 0rpc/zerorpc-python aaugustin/websockets tomerfiliba/rpyc --model deepseek:deepseek-chat
-    python -m src.cli --task implementation --question 3 --repo 0rpc/zerorpc-python aaugustin/websockets tomerfiliba/rpyc --model deepseek:deepseek-chat
-    python -m src.cli --task implementation --question 4 --repo 0rpc/zerorpc-python aaugustin/websockets tomerfiliba/rpyc --model deepseek:deepseek-chat
+    python -m src.cli --task implementation --question 1 --repo tomerfiliba-org/rpyc --model deepseek:deepseek-chat
+    python -m src.cli --task implementation --question 2 --repo tomerfiliba-org/rpyc grpc/grpc --model deepseek:deepseek-chat
+    python -m src.cli --task implementation --question 3 --repo tomerfiliba-org/rpyc grpc/grpc --model deepseek:deepseek-chat
+    python -m src.cli --task implementation --question 4 --repo tomerfiliba-org/rpyc grpc/grpc --model deepseek:deepseek-chat
 
     # Reuse
     python -m src.cli --task reuse --list-task-questions
-    python -m src.cli --task reuse --question 1 --repo 0rpc/zerorpc-python --model deepseek:deepseek-chat
-    python -m src.cli --task reuse --question 2 --repo 0rpc/zerorpc-python --model deepseek:deepseek-chat
-    python -m src.cli --task reuse --question 3 --repo 0rpc/zerorpc-python --topk 10 --model deepseek:deepseek-chat
-    python -m src.cli --task reuse --question 4 --repo 0rpc/zerorpc-python --model deepseek:deepseek-chat
+    python -m src.cli --task reuse --question 1 --repo tomerfiliba-org/rpyc grpc/grpc --model deepseek:deepseek-chat
+    python -m src.cli --task reuse --question 2 --repo tomerfiliba-org/rpyc grpc/grpc --model deepseek:deepseek-chat
+    python -m src.cli --task reuse --question 3 --repo tomerfiliba-org/rpyc --topk 10 --model deepseek:deepseek-chat
+    python -m src.cli --task reuse --question 4 --repo tomerfiliba-org/rpyc --model deepseek:deepseek-chat
 """
 
 import argparse

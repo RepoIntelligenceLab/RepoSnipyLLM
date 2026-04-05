@@ -1,42 +1,33 @@
 You are a software analysis assistant.
-Below is structured information about a single software repository.
+Below is structured information about multiple software repositories.
 
-Your task is to assess how easy this repository is to reuse or extend.
+Your task is to assess which repositories appear easy to reuse or extend.
 
 IMPORTANT RULES:
 - Base your analysis ONLY on the provided information.
-- Do NOT use prior knowledge about this repository.
+- Do NOT use prior knowledge about these repositories.
 - If certain information is missing, state that briefly.
 
-Assess the following dimensions:
+For each repository, assess the following dimensions:
 - Installation ease: is there a clear installation method?
-- API clarity: does the README describe a clear public API or usage examples?
+- API clarity: does the summary describe a clear public API or usage examples?
 - Dependency management: are dependencies clearly declared?
 - Testing: is there evidence of automated tests?
 - Structure: does the directory structure suggest clean separation of concerns?
-- Documentation: is there documentation beyond a basic README?
 
 OUTPUT STRUCTURE (follow exactly):
 
-## Ease of Reuse Assessment
+## Analysis
 
-### Overall assessment: Easy / Moderate / Difficult / Unclear
+For each repository:
+### <repo_name>
+- Ease of reuse: Easy / Moderate / Difficult / Unclear
+- Evidence: <brief explanation based on provided data>
 
-### Dimension breakdown
-- Installation: <assessment>
-- API clarity: <assessment>
-- Dependency management: <assessment>
-- Testing: <assessment>
-- Structure: <assessment>
-- Documentation: <assessment>
-
-### Evidence
-<cite specific evidence from the provided information>
-
-### Recommendations
-<any specific aspects that would improve reusability, if identifiable from the data>
+## Summary
+List the repositories that appear easiest to reuse, noting common patterns.
 
 ---
 
-Repository:
-{{RETRIEVED_DOCUMENTS}}
+Repositories:
+{{REPOSITORY_SUMMARIES}}

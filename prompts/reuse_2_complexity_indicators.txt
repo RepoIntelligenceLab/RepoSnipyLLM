@@ -1,11 +1,11 @@
 You are a software analysis assistant.
-Below is structured information about a single software repository.
+Below is structured information about multiple software repositories.
 
-Your task is to identify signs of high structural complexity in this repository.
+Your task is to identify which repositories show signs of high structural complexity.
 
 IMPORTANT RULES:
 - Base your analysis ONLY on the provided information.
-- Do NOT use prior knowledge about this repository.
+- Do NOT use prior knowledge about these repositories.
 - If certain information is missing, state that briefly.
 
 Look for complexity indicators such as:
@@ -16,17 +16,18 @@ Look for complexity indicators such as:
 
 OUTPUT STRUCTURE (follow exactly):
 
-## Complexity Assessment
+## Analysis
 
-### Overall complexity: High / Moderate / Low / Unclear
+For each repository:
+### <repo_name>
+- Complexity: High / Moderate / Low / Unclear
+- Indicators: <list specific complexity indicators found>
+- Evidence: <brief explanation based on provided data>
 
-### Indicators found
-<list specific complexity indicators found in the provided data>
-
-### Evidence
-<cite specific evidence from the provided information>
+## Summary
+List the repositories with highest complexity and note common patterns.
 
 ---
 
-Repository:
-{{RETRIEVED_DOCUMENTS}}
+Repositories:
+{{REPOSITORY_SUMMARIES}}

@@ -66,25 +66,29 @@ def _format_repos_block(repo_data_list: list[dict], retrieval: list[str]) -> str
 
 
 # ── Prompt builders ───────────────────────────────────────────────────────────
+MAX_PROMPT_CHARS = 400000
 
 
 def build_single_repo_prompt(question_config: dict, repo_data: dict) -> str:
     template = _load_template(question_config["prompt"])
     repo_block = _format_repo_block(repo_data, question_config["retrieval"])
-    return template.replace("{{RETRIEVED_DOCUMENTS}}", repo_block)
+    prompt = template.replace("{{RETRIEVED_DOCUMENTS}}", repo_block)
+    return prompt[:MAX_PROMPT_CHARS] if len(prompt) > MAX_PROMPT_CHARS else prompt
 
 
 def build_batch_summarise_prompt(question_config: dict, repo_data_list: list[dict]) -> str:
     template_dir = str(Path(question_config["prompt"]).parent)
     template = _load_template(f"{template_dir}/batch_summarise.txt")
     repos_block = _format_repos_block(repo_data_list, question_config["retrieval"])
-    return template.replace("{{REPOSITORIES}}", repos_block)
+    prompt = template.replace("{{REPOSITORIES}}", repos_block)
+    return prompt[:MAX_PROMPT_CHARS] if len(prompt) > MAX_PROMPT_CHARS else prompt
 
 
 def build_final_compare_prompt(question_config: dict, group_summaries: list[str]) -> str:
     template = _load_template(question_config["prompt"])
     summaries_block = "\n\n---\n\n".join(group_summaries)
-    return template.replace("{{REPOSITORY_SUMMARIES}}", summaries_block)
+    prompt = template.replace("{{REPOSITORY_SUMMARIES}}", summaries_block)
+    return prompt[:MAX_PROMPT_CHARS] if len(prompt) > MAX_PROMPT_CHARS else prompt
 
 
 def build_final_similar_prompt(
@@ -94,5 +98,6 @@ def build_final_similar_prompt(
 ) -> str:
     template = _load_template(question_config["prompt"])
     summaries_block = "\n\n---\n\n".join(group_summaries)
-    return (template.replace("{{REFERENCE_REPO}}", reference_block).replace("{{REPOSITORY_SUMMARIES}}",
-                                                                            summaries_block))
+    prompt = (template.replace("{{REFERENCE_REPO}}", reference_block).replace("{{REPOSITORY_SUMMARIES}}",
+                                                                              summaries_block))
+    return prompt[:MAX_PROMPT_CHARS] if len(prompt) > MAX_PROMPT_CHARS else prompt

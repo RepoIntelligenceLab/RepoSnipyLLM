@@ -23,7 +23,7 @@ TASKS = {
                 "handler":
                 "single",
                 "retrieval": [
-                    "readme",
+                    "readme_summary",
                     "software_type",
                     "invocation",
                     "requirements",
@@ -235,7 +235,7 @@ TASKS = {
                 "name": "Which repositories appear easy to reuse or extend?",
                 "description": ("Assesses ease of reuse based on structure, "
                                 "documentation and dependency management."),
-                "handler": "single",
+                "handler": "search",
                 "retrieval": [
                     "readme_summary",
                     "software_type",
@@ -252,7 +252,7 @@ TASKS = {
                 "description": ("Identifies repositories with high complexity, "
                                 "e.g. deeply nested modules or large functions."),
                 "handler":
-                "single",
+                "search",
                 "retrieval": [
                     "readme_summary",
                     "software_type",

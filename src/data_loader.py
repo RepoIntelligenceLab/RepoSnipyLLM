@@ -15,7 +15,7 @@ from elasticsearch import Elasticsearch
 
 load_dotenv()
 
-INDEX = "repositories_enriched"
+INDEX = "repositories_enriched_new"
 ES_URL = os.getenv("ES_URL", "http://localhost:9200")
 API_KEY = os.getenv("ES_API_KEY")
 
