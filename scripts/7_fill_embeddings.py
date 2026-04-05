@@ -20,6 +20,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
 from tqdm import tqdm
+import numpy as np
 
 load_dotenv()
 
@@ -63,6 +64,11 @@ def main(pkl_path: str = "../data/repo_embeddings/repo_info_embeddings.pkl"):
 
         if len(embedding_list) != 3072:
             tqdm.write(f"  [SKIP] {repo_id} — wrong shape: {len(embedding_list)}")
+            skipped += 1
+            continue
+
+        if np.allclose(mean_repo.flatten(), 0):
+            tqdm.write(f"  [SKIP] {repo_id} — zero vector")
             skipped += 1
             continue
 
