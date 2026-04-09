@@ -74,8 +74,11 @@ def run_awesome_python_pipeline(json_path, pickle_path):
                     # Ensure uniqueness within JSON and populate reverse index
                     if repo_full_name not in structured_data[current_category]:
                         structured_data[current_category].append(repo_full_name)
-                        # Build reverse index for Pickle (latest category wins)
-                        reverse_index[repo_full_name] = current_category
+                        # Build reverse index for Pickle (all categories preserved)
+                        if repo_full_name not in reverse_index:
+                            reverse_index[repo_full_name] = []
+                        if current_category not in reverse_index[repo_full_name]:
+                            reverse_index[repo_full_name].append(current_category)
 
     # 4. Final filtering (remove empty categories)
     final_json_data = {k: v for k, v in structured_data.items() if v}
