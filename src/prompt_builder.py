@@ -10,6 +10,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+MAX_PROMPT_CHARS = 250000
+
 # ── Formatting helpers ────────────────────────────────────────────────────────
 
 
@@ -65,39 +67,56 @@ def _format_repos_block(repo_data_list: list[dict], retrieval: list[str]) -> str
     return "\n\n---\n\n".join(blocks)
 
 
+def _truncate(prompt: str, context: str) -> tuple[str, str]:
+    """
+    Truncate prompt to MAX_PROMPT_CHARS.
+    Returns (truncated_prompt, actual_context) where actual_context
+    reflects what was actually included in the prompt.
+    """
+    if len(prompt) <= MAX_PROMPT_CHARS:
+        return prompt, context
+
+    truncated_prompt = prompt[:MAX_PROMPT_CHARS]
+    # Infer how much of the context was actually included
+    overhead = len(prompt) - len(context)
+    actual_context_len = max(0, MAX_PROMPT_CHARS - overhead)
+    actual_context = context[:actual_context_len]
+    return truncated_prompt, actual_context
+
+
 # ── Prompt builders ───────────────────────────────────────────────────────────
-MAX_PROMPT_CHARS = 400000
 
 
-def build_single_repo_prompt(question_config: dict, repo_data: dict) -> str:
+def build_single_repo_prompt(question_config: dict, repo_data: dict) -> tuple[str, str]:
     template = _load_template(question_config["prompt"])
-    repo_block = _format_repo_block(repo_data, question_config["retrieval"])
-    prompt = template.replace("{{RETRIEVED_DOCUMENTS}}", repo_block)
-    return prompt[:MAX_PROMPT_CHARS] if len(prompt) > MAX_PROMPT_CHARS else prompt
+    context = _format_repo_block(repo_data, question_config["retrieval"])
+    prompt = template.replace("{{RETRIEVED_DOCUMENTS}}", context)
+    return _truncate(prompt, context)
 
 
-def build_batch_summarise_prompt(question_config: dict, repo_data_list: list[dict]) -> str:
+def build_batch_summarise_prompt(question_config: dict, repo_data_list: list[dict]) -> tuple[str, str]:
     template_dir = str(Path(question_config["prompt"]).parent)
     template = _load_template(f"{template_dir}/batch_summarise.txt")
-    repos_block = _format_repos_block(repo_data_list, question_config["retrieval"])
-    prompt = template.replace("{{REPOSITORIES}}", repos_block)
-    return prompt[:MAX_PROMPT_CHARS] if len(prompt) > MAX_PROMPT_CHARS else prompt
+    context = _format_repos_block(repo_data_list, question_config["retrieval"])
+    prompt = template.replace("{{REPOSITORIES}}", context)
+    return _truncate(prompt, context)
 
 
-def build_final_compare_prompt(question_config: dict, group_summaries: list[str]) -> str:
+def build_final_compare_prompt(question_config: dict, group_summaries: list[str]) -> tuple[str, str]:
     template = _load_template(question_config["prompt"])
-    summaries_block = "\n\n---\n\n".join(group_summaries)
-    prompt = template.replace("{{REPOSITORY_SUMMARIES}}", summaries_block)
-    return prompt[:MAX_PROMPT_CHARS] if len(prompt) > MAX_PROMPT_CHARS else prompt
+    context = "\n\n---\n\n".join(group_summaries)
+    prompt = template.replace("{{REPOSITORY_SUMMARIES}}", context)
+    return _truncate(prompt, context)
 
 
 def build_final_similar_prompt(
     question_config: dict,
     reference_block: str,
     group_summaries: list[str],
-) -> str:
+) -> tuple[str, str]:
     template = _load_template(question_config["prompt"])
     summaries_block = "\n\n---\n\n".join(group_summaries)
+    context = f"{reference_block}\n\n---\n\n{summaries_block}"
     prompt = (template.replace("{{REFERENCE_REPO}}", reference_block).replace("{{REPOSITORY_SUMMARIES}}",
                                                                               summaries_block))
-    return prompt[:MAX_PROMPT_CHARS] if len(prompt) > MAX_PROMPT_CHARS else prompt
+    return _truncate(prompt, context)

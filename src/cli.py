@@ -126,7 +126,7 @@ def main(argv=None) -> int:
 
     # Run
     try:
-        prompt, answer = run_question(
+        prompt, answer, context = run_question(
             question_config=question_config,
             repos=args.repo,
             model=args.model,
