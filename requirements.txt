@@ -11,3 +11,7 @@ langchain-ollama
 elasticsearch
 openai
 zai-sdk
+ragas
+langchain-openai
+datasets
+sentence-transformers

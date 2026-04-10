@@ -1,0 +1,18 @@
+=== Overall ===
+,0
+faithfulness,0.8648
+answer_relevancy,0.6818
+llm_context_precision_without_reference,0.9709
+
+=== By Handler ===
+handler,faithfulness,answer_relevancy,llm_context_precision_without_reference
+search,0.8534,0.6846,0.9887
+single,0.9138,0.67,0.8943
+
+=== By Task ===
+task,faithfulness,answer_relevancy,llm_context_precision_without_reference
+architecture,0.907,0.665,0.9939
+execution,0.8294,0.6556,0.9756
+implementation,0.8397,0.6915,0.9202
+repository_understanding,0.9383,0.665,0.9753
+reuse,0.8254,0.7287,1.0
