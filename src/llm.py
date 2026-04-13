@@ -18,6 +18,11 @@ load_dotenv()
 
 DEFAULT_MODEL = "zhipu:glm-4.7-flash"
 SUPPORTED_PROVIDERS = {"deepseek", "zhipu", "ollama"}
+PROVIDER_MODELS = {
+    "deepseek": ["deepseek-chat"],
+    "zhipu":    ["glm-4.7-flash"],
+    "ollama":   ["qwen3:8b"],
+}
 
 _deepseek_client = None
 _zhipu_client = None
