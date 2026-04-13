@@ -1,0 +1,3 @@
+handler,faithfulness,answer_relevancy,llm_context_precision_without_reference
+search,0.8534,0.6846,0.9887
+single,0.9138,0.67,0.8943

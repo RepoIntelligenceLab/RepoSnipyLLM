@@ -22,7 +22,6 @@ Usage:
   cd evaluations/
   python eval_ragas.py
   python eval_ragas.py --dataset results/ragas_dataset.json
-  nohup python -u eval_ragas.py > logs/eval_ragas.log 2>&1 &
 
 Dependencies:
   pip install ragas langchain-openai langchain-community sentence-transformers datasets
@@ -152,25 +151,23 @@ def main(dataset_path: Path = DATASET_PATH):
 
     METRIC_COLS = ["faithfulness", "answer_relevancy", "llm_context_precision_without_reference"]
 
-    # Summary by handler
-    summary_handler = (df.groupby("handler")[METRIC_COLS].mean().round(4))
-
-    # Summary by task
-    summary_task = (df.groupby("task")[METRIC_COLS].mean().round(4))
-
     # Overall
-    summary_overall = (df[METRIC_COLS].mean().round(4))
+    summary_overall = df[METRIC_COLS].mean().round(4).to_frame("score")
+    summary_overall.to_csv(RESULTS_DIR / "ragas_overall.csv")
 
-    # Save summary
-    with open(SUMMARY_OUTPUT, "w") as f:
-        f.write("=== Overall ===\n")
-        summary_overall.to_csv(f)
-        f.write("\n=== By Handler ===\n")
-        summary_handler.to_csv(f)
-        f.write("\n=== By Task ===\n")
-        summary_task.to_csv(f)
+    # By Handler
+    summary_handler = df.groupby("handler")[METRIC_COLS].mean().round(4)
+    summary_handler.to_csv(RESULTS_DIR / "ragas_by_handler.csv")
 
-    print(f"Summary saved to:      {SUMMARY_OUTPUT}")
+    # By Task
+    summary_task = df.groupby("task")[METRIC_COLS].mean().round(4)
+    summary_task.to_csv(RESULTS_DIR / "ragas_by_task.csv")
+
+    # By Question (task + question_id)
+    summary_question = df.groupby(["task", "question_id"])[METRIC_COLS].mean().round(4)
+    summary_question.to_csv(RESULTS_DIR / "ragas_by_question.csv")
+
+    print(f"Saved: ragas_overall.csv, ragas_by_handler.csv, ragas_by_task.csv, ragas_by_question.csv")
 
     print("\n" + "=" * 60)
     print("RAGAS EVALUATION SUMMARY")
@@ -184,6 +181,9 @@ def main(dataset_path: Path = DATASET_PATH):
 
     print("\n--- By Task ---")
     print(summary_task.to_string())
+
+    print("\n--- By Question ---")
+    print(summary_question.to_string())
 
 
 if __name__ == "__main__":

@@ -1,0 +1,17 @@
+task,question_id,faithfulness,answer_relevancy,llm_context_precision_without_reference
+architecture,1,0.9143,0.6206,0.9756
+architecture,2,0.8671,0.6879,1.0
+architecture,3,0.8947,0.6274,1.0
+architecture,4,0.9524,0.7243,1.0
+execution,1,0.9021,0.6311,1.0
+execution,2,0.8139,0.6217,0.9268
+execution,3,0.7694,0.7138,1.0
+implementation,1,0.887,0.6404,0.6829
+implementation,2,0.7823,0.7123,1.0
+implementation,3,0.8534,0.7004,1.0
+implementation,4,0.8336,0.713,1.0
+repository_understanding,1,0.954,0.5887,1.0
+repository_understanding,2,0.9213,0.7414,0.95
+reuse,1,0.7536,0.7227,1.0
+reuse,2,0.8184,0.6826,1.0
+reuse,4,0.8989,0.7807,1.0

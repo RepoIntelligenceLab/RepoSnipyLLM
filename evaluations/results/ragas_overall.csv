@@ -1,0 +1,4 @@
+,score
+faithfulness,0.8648
+answer_relevancy,0.6818
+llm_context_precision_without_reference,0.9709
