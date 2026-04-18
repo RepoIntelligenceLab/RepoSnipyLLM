@@ -16,7 +16,7 @@ Output pkl structure:
         "mean_requirement_embedding": np.ndarray (1, 768),
         "readme_embeddings":          np.ndarray (N, 768),
         "mean_readme_embedding":      np.ndarray (1, 768),
-        "mean_repo_embedding":        np.ndarray (1, 3072),
+        "mean_repo_embedding":        np.ndarray (1, 3072),  # code + doc + readme + req
     },
     ...
 }
@@ -191,7 +191,7 @@ def generate_repo_embeddings(model_pipeline, doc: dict) -> dict:
     mean_req = req_embeddings.mean(axis=0, keepdims=True)
     mean_readme = readme_embeddings.mean(axis=0, keepdims=True)
 
-    mean_repo = np.concatenate([mean_code, mean_doc, mean_req, mean_readme], axis=1)
+    mean_repo = np.concatenate([mean_code, mean_doc, mean_readme, mean_req], axis=1)
 
     return {
         "code_embeddings": code_embeddings,
