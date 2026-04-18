@@ -45,7 +45,7 @@ def _get_es_client() -> Elasticsearch:
 def _similarity_search(repo_id: str, topk: int) -> list[str]:
     es = _get_es_client()
     doc = es.get(index=INDEX, id=repo_id)["_source"]
-    embedding = doc.get("embedding")
+    embedding = doc.get("embedding_code")
     if not embedding:
         raise ValueError(f"Repository '{repo_id}' has no embedding stored.")
 
@@ -57,7 +57,7 @@ def _similarity_search(repo_id: str, topk: int) -> list[str]:
                                      "bool": {
                                          "must": {
                                              "exists": {
-                                                 "field": "embedding"
+                                                 "field": "embedding_code"
                                              }
                                          },
                                          "must_not": {
@@ -68,7 +68,7 @@ def _similarity_search(repo_id: str, topk: int) -> list[str]:
                                      }
                                  },
                                  "script": {
-                                     "source": "cosineSimilarity(params.query_vector, 'embedding') + 1.0",
+                                     "source": "cosineSimilarity(params.query_vector, 'embedding_code') + 1.0",
                                      "params": {
                                          "query_vector": embedding
                                      }

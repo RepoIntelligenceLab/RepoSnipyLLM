@@ -2,16 +2,20 @@
 eval_stage_a.py
 
 Stage A evaluation: compares retrieval quality of BM25 and
-5 embedding-based search methods using Precision@K, Recall@K,
+embedding-based search methods using Precision@K, Recall@K,
 F1@K, and NDCG@K metrics.
 
 Retrieval methods evaluated:
   - BM25                  : keyword search on readme_summary field
-  - embedding             : repo-level embedding (3072 dims, code+doc+req+readme)
+  - repo-embedding        : full repo-level embedding (3072 dims, code+doc+readme+req)
   - embedding_code        : code-level embedding (768 dims)
   - embedding_doc         : doc-level embedding (768 dims)
   - embedding_requirement : requirement-level embedding (768 dims)
   - embedding_readme      : readme-level embedding (768 dims)
+  - code+readme           : average similarity of code and readme embeddings
+  - code+doc              : average similarity of code and doc embeddings
+  - code+doc+readme       : average similarity of code, doc and readme embeddings
+  - code+doc+readme+req   : average similarity of all four embeddings
 
 Ground truth: repos sharing the same category as the reference repo.
 If a reference repo belongs to multiple categories, ground truth is
@@ -40,14 +44,22 @@ load_dotenv()
 RESULTS_DIR = Path("results")
 RESULTS_DIR.mkdir(exist_ok=True)
 
-# Retrieval methods: (method_name, es_field)
+# Retrieval methods: (method_name, single_es_field, combined_fields)
+# - single_es_field: str if single embedding search, None otherwise
+# - combined_fields: list of fields if combined search, None otherwise
+# - Both None means BM25
 RETRIEVAL_METHODS = [
-    ("BM25", None),
-    ("embedding", "embedding"),
-    ("embedding_code", "embedding_code"),
-    ("embedding_doc", "embedding_doc"),
-    ("embedding_requirement", "embedding_requirement"),
-    ("embedding_readme", "embedding_readme"),
+    ("BM25", None, None),
+    ("embedding_code", "embedding_code", None),
+    ("embedding_doc", "embedding_doc", None),
+    ("embedding_readme", "embedding_readme", None),
+    ("embedding_requirement", "embedding_requirement", None),
+    ("repo-embedding", "embedding", None),
+    # Combined methods (average similarity)
+    ("code+doc", None, ["embedding_code", "embedding_doc"]),
+    ("code+readme", None, ["embedding_code", "embedding_readme"]),
+    ("code+doc+readme", None, ["embedding_code", "embedding_doc", "embedding_readme"]),
+    ("code+doc+readme+req", None, ["embedding_code", "embedding_doc", "embedding_readme", "embedding_requirement"]),
 ]
 
 # ── ES client ─────────────────────────────────────────────────────────────────
@@ -85,7 +97,7 @@ def bm25_search(es: Elasticsearch, query_text: str, topk: int, exclude_id: str) 
 
 
 def embedding_search(es: Elasticsearch, query_vector: list[float], field: str, topk: int, exclude_id: str) -> list[str]:
-    """Cosine similarity search on a dense_vector field."""
+    """Cosine similarity search on a single dense_vector field."""
     resp = es.search(index=INDEX,
                      body={
                          "query": {
@@ -109,6 +121,49 @@ def embedding_search(es: Elasticsearch, query_vector: list[float], field: str, t
                                      "params": {
                                          "query_vector": query_vector
                                      }
+                                 }
+                             }
+                         },
+                         "size": topk,
+                         "_source": False,
+                     })
+    return [hit["_id"] for hit in resp["hits"]["hits"]]
+
+
+def combined_search(
+    es: Elasticsearch,
+    query_vectors: dict[str, list[float]],
+    fields: list[str],
+    topk: int,
+    exclude_id: str,
+) -> list[str]:
+    """Average cosine similarity across multiple embedding fields."""
+    n = len(fields)
+    score_source = ("(" + " + ".join(f"(cosineSimilarity(params.v{i}, '{f}') + 1.0)"
+                                     for i, f in enumerate(fields)) + f") / {n}")
+    params = {f"v{i}": query_vectors[f] for i, f in enumerate(fields)}
+
+    resp = es.search(index=INDEX,
+                     body={
+                         "query": {
+                             "script_score": {
+                                 "query": {
+                                     "bool": {
+                                         "must": [{
+                                             "exists": {
+                                                 "field": f
+                                             }
+                                         } for f in fields],
+                                         "must_not": {
+                                             "term": {
+                                                 "_id": exclude_id
+                                             }
+                                         }
+                                     }
+                                 },
+                                 "script": {
+                                     "source": score_source,
+                                     "params": params,
                                  }
                              }
                          },
@@ -189,19 +244,34 @@ def main():
 
         query_text = doc.get("readme_summary", "")
 
-        for method_name, field in RETRIEVAL_METHODS:
+        for method_name, single_field, combined_fields in RETRIEVAL_METHODS:
             try:
                 if method_name == "BM25":
                     if not query_text:
                         tqdm.write(f"  [SKIP] {ref_repo} BM25 — no readme_summary")
                         continue
                     retrieved = bm25_search(es, query_text, max_k, ref_repo)
+
+                elif combined_fields:
+                    query_vectors = {}
+                    skip = False
+                    for f in combined_fields:
+                        vec = doc.get(f)
+                        if not vec:
+                            tqdm.write(f"  [SKIP] {ref_repo} {method_name} — missing {f}")
+                            skip = True
+                            break
+                        query_vectors[f] = vec
+                    if skip:
+                        continue
+                    retrieved = combined_search(es, query_vectors, combined_fields, max_k, ref_repo)
+
                 else:
-                    query_vector = doc.get(field)
+                    query_vector = doc.get(single_field)
                     if not query_vector:
                         tqdm.write(f"  [SKIP] {ref_repo} {method_name} — no embedding")
                         continue
-                    retrieved = embedding_search(es, query_vector, field, max_k, ref_repo)
+                    retrieved = embedding_search(es, query_vector, single_field, max_k, ref_repo)
 
                 for k in K_VALUES:
                     p = precision_at_k(retrieved, relevant, k)
@@ -231,7 +301,9 @@ def main():
     print(f"\nRaw results saved to: {raw_path}")
 
     # Save summary (mean per method and K)
-    summary = (df.groupby(["method", "k"])[["precision", "recall", "f1", "ndcg"]].mean().round(4))
+    method_order = [m[0] for m in RETRIEVAL_METHODS]
+    summary = (df.groupby(["method", "k"])[["precision", "recall", "f1",
+                                            "ndcg"]].mean().round(4).reindex(method_order, level="method"))
     summary_path = RESULTS_DIR / "stage_a_summary.csv"
     summary.to_csv(summary_path)
     print(f"Summary saved to:      {summary_path}")
