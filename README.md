@@ -317,7 +317,7 @@ This project builds on:
 - [inspect4py](https://github.com/SoftwareUnderstanding/inspect4py) — static code analysis
 - [UniXcoder](https://github.com/microsoft/CodeBERT/tree/master/UniXcoder) — code representation model
 - [Awesome Python](https://github.com/vinta/awesome-python) — curated repository dataset
-- [RAGAS](https://github.com/explodinggradients/ragas) — RAG evaluation framework
+- [RAGAS](https://github.com/vibrantlabsai/ragas) — RAG evaluation framework
 
 <!-- --- -->
 
