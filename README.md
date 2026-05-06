@@ -191,7 +191,7 @@ python -m src.cli \
 
 | Provider | Format | Example models |
 |----------|--------|----------------|
-| DeepSeek | `deepseek:<model>` | `deepseek:deepseek-chat` (DeepSeek-V3) |
+| DeepSeek | `deepseek:<model>` | `deepseek:deepseek-chat` (DeepSeek-V3), `deepseek:deepseek-v4-flash` |
 | ZhipuAI | `zhipu:<model>` | `zhipu:glm-4.7-flash` (GLM-4.7-Flash) |
 | Ollama | `ollama:<model>` | `ollama:qwen3:8b` |
 

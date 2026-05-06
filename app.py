@@ -144,7 +144,7 @@ with st.sidebar:
     model = f"{provider}:{model_name}" if model_name else None
 
     st.divider()
-    topk = st.slider("Top-K (for similar questions)", min_value=3, max_value=20, value=10)
+    topk = st.slider("Top-K (for similar questions)", min_value=1, max_value=10, value=5)
 
     st.divider()
     logdir = st.text_input(

@@ -10,7 +10,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-MAX_PROMPT_CHARS = 250000
+# MAX_PROMPT_CHARS = 250000
+MAX_PROMPT_CHARS = 2500000
 
 # ── Formatting helpers ────────────────────────────────────────────────────────
 
