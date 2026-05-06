@@ -6,6 +6,9 @@ Streamlit UI for RepoSnipy-LLM.
 Usage:
   cd /path/to/RepoSnipyLLM
   streamlit run app.py
+  nohup streamlit run app.py > streamlit.log 2>&1 &
+  tail -f RepoSnipyLLM/streamlit.log
+  pkill -f "streamlit run"
 """
 
 import os
