@@ -79,7 +79,7 @@ def load_repo_list() -> list[dict]:
     es = Elasticsearch(
         os.getenv("ES_URL", "http://localhost:9200"),
         api_key=os.getenv("ES_API_KEY"),
-        timeout=60,
+        request_timeout=60,
     )
     INDEX = "repositories_enriched_new"
     repos = []
