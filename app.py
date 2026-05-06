@@ -76,6 +76,7 @@ def load_repo_list() -> list[dict]:
     es = Elasticsearch(
         os.getenv("ES_URL", "http://localhost:9200"),
         api_key=os.getenv("ES_API_KEY"),
+        timeout=60,
     )
     INDEX = "repositories_enriched_new"
     repos = []
@@ -115,7 +116,7 @@ def load_repo_list() -> list[dict]:
 # ── Header ────────────────────────────────────────────────────────────────────
 
 st.markdown('<div class="main-title">🔍 RepoSnipy-LLM</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Question-Driven Semantic Search and Explanation over Software Repositories</div>',
+st.markdown('<div class="subtitle">Structured Knowledge-Grounded Explanations for Scientific Software Mining</div>',
             unsafe_allow_html=True)
 
 # Load repo list once
