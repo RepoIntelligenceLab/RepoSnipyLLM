@@ -7,6 +7,13 @@ RepoSnipy-LLM extends [RepoSnipy](https://github.com/RepoMining/RepoSnipy) with 
 <!-- > 📄 **Paper**: *RepoSnipy-LLM: Structured Knowledge-Grounded Explanations for Scientific Software Mining* — IEEE eScience 2026 -->
 
 ---
+## Live Demo
+
+A cloud-hosted Streamlit demo is available at: http://35.214.60.59:8501
+
+Please note that the demo uses live LLM API calls and may occasionally be paused to manage resource usage. If the demo is unavailable, the repository provides instructions for running RepoSnipy-LLM locally.
+
+---
 
 ## Overview
 
